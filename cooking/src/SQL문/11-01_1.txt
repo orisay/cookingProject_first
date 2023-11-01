@@ -1,0 +1,126 @@
+cmd창 이용 유저 생성
+cmd
+sqlplus
+관리자 계정 접속
+
+1.create user cooki01 identified by 1234  default tablespace users quota unlimited on users;
+2.grant connect, resource to cooki01;
+3.conn cooki01/1234;
+
+디벨로퍼 접속
+왼쪽 상단 초록색 + 버튼 클릭
+Name cooki1
+사용자 이름 반드시 cooki01
+비밀번호 1234
+롤 기본값
+접속 유형 기본
+호스트 이름 : localhost
+포트 : 1521
+SID : xe
+
+확인 후 
+테스트
+상태 성공 이후 저장 클릭 후 저장
+
+--유저
+CREATE TABLE TB_USER
+(
+    ID          VARCHAR2(13)     NOT NULL, 
+    PW          VARCHAR2(128)    NOT NULL, 
+    NAME        VARCHAR2(20)     NOT NULL, 
+    NICKNAME    VARCHAR2(48)     NOT NULL, 
+    TEL1        VARCHAR2(3)      NOT NULL, 
+    TEL2        VARCHAR2(4)      NOT NULL, 
+    TEL3        VARCHAR2(4)      NOT NULL, 
+    EMAIL       VARCHAR2(20)     NOT NULL, 
+    DOMAIN      VARCHAR2(20)     NOT NULL, 
+    ADDR1       VARCHAR2(100)    NOT NULL, 
+    ADDR2       VARCHAR2(200)    NOT NULL, 
+    CRT_TM      DATE             DEFAULT SYSDATE NOT NULL, 
+    CRT_NAME    VARCHAR2(48)     NOT NULL, 
+    UP_TM       DATE             DEFAULT SYSDATE NOT NULL, 
+    UP_NAME     VARCHAR2(48)     NULL, 
+     PRIMARY KEY (ID)
+);
+
+--권한
+CREATE TABLE TB_ROLE
+(
+    ROLE_NUM    NUMBER(1, 0)    NOT NULL CHECK(ROLE_NUM IN(1,2,3)), 
+    ROLE        VARCHAR2(13)    NOT NULL,
+     PRIMARY KEY (ROLE_NUM)
+);
+
+
+--카테고리
+CREATE TABLE TB_CATEGORY
+(
+    CAT_DOMAIN    VARCHAR2(20)    NOT NULL, 
+    ROLE_NUM      NUMBER(1, 0)    NOT NULL, 
+    CRT_TM        DATE            DEFAULT SYSDATE NOT NULL, 
+    CRT_NAME      VARCHAR2(48)    NOT NULL, 
+    UP_TM         DATE            DEFAULT SYSDATE NOT NULL, 
+    UP_NAME       VARCHAR2(48)    NULL, 
+     PRIMARY KEY (CAT_DOMAIN)
+);
+
+--게시판
+CREATE TABLE TB_BOARD
+(
+    BOARD_NUM     NUMBER(18, 0)    NOT NULL, 
+    CAT_DOMAIN    VARCHAR2(20)     NOT NULL, 
+    CREATOR       NVARCHAR2(48)    NOT NULL, 
+    TITIL         VARCHAR2(200)    NOT NULL, 
+    CONTENT       CLOB             NOT NULL, 
+    HIT           NUMBER           DEFAULT 0, 
+    RPL_CNT       NUMBER(18, 0)   DEFAULT 0, 
+    CRT_TM        DATE             DEFAULT SYSDATE NOT NULL, 
+    UP_TM         DATE             DEFAULT SYSDATE NOT NULL,
+    UP_NAME       VARCHAR2(48)     NULL, 
+     PRIMARY KEY (BOARD_NUM)
+);
+
+--리플
+CREATE TABLE TB_REPLY
+(
+    RPL_NUM        NUMBER(18, 0)     NOT NULL, 
+    BOARD_NUM      NUMBER(18, 0)     NOT NULL, 
+    CREATOR        NVARCHAR2(48)     NOT NULL, 
+    RPL_CONTENT    VARCHAR2(1000)    NOT NULL, 
+    DEPTH          NUMBER(1)         NOT NULL, 
+    CRT_TM         DATE              DEFAULT SYSDATE NOT NULL, 
+   UP_TM          DATE              DEFAULT SYSDATE NOT NULL,
+   UP_NAME        VARCHAR2(48)      NULL, 
+     PRIMARY KEY (RPL_NUM)
+);
+
+--매핑 권한
+CREATE TABLE MP_USER_ROLE
+(
+    ROLE_NUM    NUMBER(1, 0)    NOT NULL, 
+    ID          VARCHAR2(13)    NOT NULL, 
+     PRIMARY KEY (ROLE_NUM, ID)
+);
+CREATE SEQUENCE TB_BOARD_SEQ START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE TB_ROLE_SEQ START WITH 1 INCREMENT BY 1;
+
+ALTER TABLE TB_BOARD
+    ADD CONSTRAINT FK_TB_BOARD_CAT_DOMAIN FOREIGN KEY (CAT_DOMAIN)
+        REFERENCES TB_CATEGORY (CAT_DOMAIN) ;
+
+ALTER TABLE TB_REPLY
+    ADD CONSTRAINT FK_TB_REPLY_BOARD_NUM FOREIGN KEY (BOARD_NUM)
+        REFERENCES TB_BOARD (BOARD_NUM) ;
+
+ALTER TABLE MP_USER_ROLE
+    ADD CONSTRAINT FK_MP_USER_ROLE_ID  FOREIGN KEY (ID)
+        REFERENCES TB_USER (ID) ;
+
+
+ALTER TABLE MP_USER_ROLE
+    ADD CONSTRAINT FK_MP_USER_ROLE FOREIGN KEY (ROLE_NUM)
+        REFERENCES TB_ROLE (ROLE_NUM) ;
+
+
+
+

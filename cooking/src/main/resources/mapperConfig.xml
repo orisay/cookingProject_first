@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias alias="boardDTO" type="com.cooking.first.entity.BoardDTO" />
+		<typeAlias alias="categoryDTO" type="com.cooking.first.entity.CategoryDTO" />
+		<typeAlias alias="replyDTO" type="com.cooking.first.entity.ReplyDTO" />
+		<typeAlias alias="userDTO" type="com.cooking.first.entity.UserDTO" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="mapper/board.xml"></mapper>
+		<mapper resource="mapper/member.xml"></mapper>
+		<mapper resource="mapper/reply.xml"></mapper>
+	</mappers>
+</configuration>
